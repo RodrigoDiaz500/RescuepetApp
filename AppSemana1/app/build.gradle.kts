@@ -1,46 +1,60 @@
 plugins {
-    alias(libs.plugins.android.application)
-    alias(libs.plugins.kotlin.android)
-    alias(libs.plugins.kotlin.compose)
+    id("com.android.application")
+    kotlin("android")
+
+    // 1. Necesario para el procesador de anotaciones de Room (kapt)
+    kotlin("kapt")
+
+    // 2. SOLUCIÓN AL ERROR: Nuevo plugin requerido para Compose con Kotlin 2.0+
+    id("org.jetbrains.kotlin.plugin.compose")
 }
 
 android {
-    namespace = "com.example.appsemana1"
-    compileSdk = 36
+    namespace = "com.example.sumativa2" // Asegúrate de que tu namespace sea este
+    compileSdk = 34
 
     defaultConfig {
-        applicationId = "com.example.appsemana1"
-        minSdk = 21
-        targetSdk = 36
+        applicationId = "com.example.sumativa2"
+        minSdk = 24
+        targetSdk = 34
         versionCode = 1
         versionName = "1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+        vectorDrawables {
+            useSupportLibrary = true
+        }
     }
 
     buildTypes {
         release {
             isMinifyEnabled = false
-            proguardFiles(
-                getDefaultProguardFile("proguard-android-optimize.txt"),
-                "proguard-rules.pro"
-            )
+            proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
         }
     }
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_11
-        targetCompatibility = JavaVersion.VERSION_11
+        sourceCompatibility = JavaVersion.VERSION_1_8
+        targetCompatibility = JavaVersion.VERSION_1_8
     }
     kotlinOptions {
-        jvmTarget = "11"
+        jvmTarget = "1.8"
     }
     buildFeatures {
         compose = true
     }
+    // ESTE BLOQUE AHORA ESTÁ VACÍO porque el plugin de Compose Compiler lo maneja
+    composeOptions {
+        // kotlinCompilerExtensionVersion = "1.5.1" <--- ESTO YA NO ES NECESARIO Y CAUSABA EL ERROR
+    }
+    packaging {
+        resources {
+            excludes += "/META-INF/{AL2.0,LGPL2.1}"
+        }
+    }
 }
 
 dependencies {
-    implementation("androidx.compose.material3:material3:1.2.1")
+
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.activity.compose)
@@ -49,8 +63,24 @@ dependencies {
     implementation(libs.androidx.ui.graphics)
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
-    implementation(libs.androidx.navigation.runtime.ktx)
-    implementation(libs.androidx.navigation.compose)
+
+    // Navegación de Compose
+    implementation("androidx.navigation:navigation-compose:2.7.7")
+
+    // ROOM (SQLite Persistence Library)
+    val roomVersion = "2.6.1"
+
+    // Core Room Library
+    implementation("androidx.room:room-runtime:$roomVersion")
+    // Kotlin Extensions and Coroutines support for Room
+    implementation("androidx.room:room-ktx:$roomVersion")
+    // KAPT (Compilador de Room)
+    kapt("androidx.room:room-compiler:$roomVersion")
+
+    // Para usar los ViewModels y LiveData en Compose
+    implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.7.0")
+
+    // Pruebas
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)

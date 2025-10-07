@@ -1,137 +1,199 @@
-package com.example.appsemana1.login
-
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.OutlinedTextFieldDefaults
-import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+package com.example.appsemana1.register
+import androidx.compose.foundation.layout.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
-import com.example.appsemana1.R
+import com.example.appsemana1.User
 import com.example.appsemana1.userDatabase
 
+
+
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun LoginScreen(navController: NavController) {
+fun loginScreen(navController: NavController) {
+    var nombre by remember { mutableStateOf("") }
+    var telefono by remember { mutableStateOf("") }
     var correo by remember { mutableStateOf("") }
     var contrasena by remember { mutableStateOf("") }
-    var mostrarError by remember { mutableStateOf(false) }
-    var mostrarPopupExito by remember { mutableStateOf(false) }
+    var ciudad by remember { mutableStateOf("") }
+    var aceptoCondiciones by remember { mutableStateOf(false) }
 
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(horizontal = 24.dp),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center
-    ) {
-        Image(
-            painter = painterResource(id = R.drawable.logo),
-            contentDescription = "Logo de RescuePet",
-            modifier = Modifier
-                .size(400.dp)
-                .padding(bottom = 32.dp)
-        )
 
-        OutlinedTextField(
-            value = correo,
-            onValueChange = {
-                correo = it
-                mostrarError = false
-            },
-            label = { Text("Correo Electrónico", fontSize = 20.sp) },
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(bottom = 16.dp),
-            colors = OutlinedTextFieldDefaults.colors(
-                focusedBorderColor = Color(0xFFFDD835),
-                unfocusedBorderColor = Color.Gray
+    var mostrarErrorCorreo by remember { mutableStateOf(false) }
+    var mostrarErrorCamposVacios by remember { mutableStateOf(false) }
+    var mostrarDialogoExito by remember { mutableStateOf(false) }
+
+    Scaffold(
+        topBar = {
+            TopAppBar(
+                title = { },
+                navigationIcon = {
+                    IconButton(onClick = { navController.popBackStack() }) {
+                        Icon(
+                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                            contentDescription = "Volver"
+                        )
+                    }
+                },
+                colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = Color(0xFFFDD835)
+                )
             )
-        )
-
-        OutlinedTextField(
-            value = contrasena,
-            onValueChange = {
-                contrasena = it
-                mostrarError = false
-            },
-            label = { Text("Contraseña", fontSize = 20.sp) },
-            visualTransformation = PasswordVisualTransformation(),
+        }
+    ) { innerPadding ->
+        Column(
             modifier = Modifier
-                .fillMaxWidth()
-                .padding(bottom = 24.dp),
-            colors = OutlinedTextFieldDefaults.colors(
-                focusedBorderColor = Color(0xFFFDD835),
-                unfocusedBorderColor = Color.Gray
-            )
-        )
-
-        Button(
-            onClick = {
-                val usuarioEncontrado = userDatabase.find { it.correo == correo && it.contrasena == contrasena }
-                if (usuarioEncontrado != null) {
-                    mostrarError = false
-                    mostrarPopupExito = true
-                } else {
-                    mostrarError = true
-                }
-            },
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(80.dp),
-            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFFDD835))
+                .fillMaxSize()
+                .padding(innerPadding)
+                .padding(horizontal = 24.dp)
+                .padding(top = 24.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Text("Iniciar Sesión", fontSize = 20.sp, color = Color.Black)
-        }
-
-        if (mostrarError) {
             Text(
-                text = "Correo o contraseña incorrectos.",
-                color = Color.Red,
-                modifier = Modifier.padding(top = 8.dp)
+                text = "Registro de Usuario",
+                fontSize = 30.sp,
+                modifier = Modifier.padding(bottom = 50.dp)
             )
-        }
 
-        TextButton(onClick = { navController.navigate("recuperar") }) {
-            Text("Olvidé mi contraseña", fontSize = 18.sp, color = Color(0xFF8B0000))
-        }
+            OutlinedTextField(
+                value = nombre,
+                onValueChange = {
+                    nombre = it
+                    mostrarErrorCamposVacios = false
+                },
+                label = { Text("Nombre *", fontSize = 20.sp) },
+                modifier = Modifier.fillMaxWidth().padding(bottom = 8.dp)
+            )
+            OutlinedTextField(
+                value = telefono,
+                onValueChange = {
+                    telefono = it
+                    mostrarErrorCamposVacios = false
+                },
+                label = { Text("Teléfono *", fontSize = 20.sp) },
+                modifier = Modifier.fillMaxWidth().padding(bottom = 8.dp)
+            )
+            OutlinedTextField(
+                value = correo,
+                onValueChange = {
+                    correo = it
+                    mostrarErrorCorreo = false
+                    mostrarErrorCamposVacios = false
+                },
+                label = { Text("Correo Electrónico *", fontSize = 20.sp) },
+                modifier = Modifier.fillMaxWidth().padding(bottom = 8.dp)
+            )
 
-        TextButton(onClick = { navController.navigate("registro") }) {
-            Text("¿No tienes una cuenta? Regístrate aquí", fontSize = 18.sp, color = Color.Blue)
+
+            OutlinedTextField(
+                value = ciudad,
+                onValueChange = {
+                    ciudad = it
+                    mostrarErrorCamposVacios = false
+                },
+                label = { Text("Ciudad *", fontSize = 20.sp) },
+                modifier = Modifier.fillMaxWidth().padding(bottom = 8.dp)
+            )
+
+            OutlinedTextField(
+                value = contrasena,
+                onValueChange = {
+                    contrasena = it
+                    mostrarErrorCamposVacios = false
+                },
+                label = { Text("Contraseña *", fontSize = 20.sp) },
+                visualTransformation = PasswordVisualTransformation(),
+                modifier = Modifier.fillMaxWidth().padding(bottom = 8.dp)
+            )
+
+            //  error para correo ya registradp
+            if (mostrarErrorCorreo) {
+                Text(
+                    text = "El correo ya está registrado.",
+                    color = Color.Red,
+                    modifier = Modifier.align(Alignment.Start)
+                )
+            }
+
+
+            TextButton(
+                onClick = { /* TODO:  condiciones de uso */ },
+                modifier = Modifier.align(Alignment.Start)
+            ) {
+                Text(text = "Ver condiciones de uso", fontSize = 18.sp, color = Color.Blue)
+            }
+
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier.padding(vertical = 8.dp)
+            ) {
+                Checkbox(checked = aceptoCondiciones, onCheckedChange = { aceptoCondiciones = it })
+                Text(text = "Acepto las condiciones de uso", fontSize = 18.sp)
+            }
+
+            // error para campos vacíos
+            if (mostrarErrorCamposVacios) {
+                Text(
+                    text = "Todos los campos con * son obligatorios.",
+                    color = Color.Red,
+                    modifier = Modifier.padding(top = 8.dp) ,
+                    fontSize = 18.sp
+                )
+            }
+
+            Button(
+                onClick = {
+
+                    if (nombre.isBlank() || telefono.isBlank() || correo.isBlank() || ciudad.isBlank() || contrasena.isBlank()) {
+                        mostrarErrorCamposVacios = true
+                    } else {
+                        val usuarioExistente = userDatabase.find { it.correo == correo }
+
+                        if (usuarioExistente != null) {
+                            mostrarErrorCorreo = true
+                        } else if (aceptoCondiciones) {
+                            val newUser = User(nombre, telefono, correo, ciudad, contrasena)
+                            userDatabase.add(newUser)
+                            mostrarDialogoExito = true
+                        }
+                    }
+                },
+                enabled = aceptoCondiciones,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(56.dp),
+                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFFDD835))
+            ) {
+                Text("Registrar", fontSize = 20.sp, color = Color.Black)
+            }
         }
     }
 
-    // inicio de sesión exitoso
-    if (mostrarPopupExito) {
+    // registro exitoso
+    if (mostrarDialogoExito) {
         AlertDialog(
-            onDismissRequest = { mostrarPopupExito = false },
-            title = { Text("Inicio de Sesión Exitoso",fontSize = 20.sp) },
-            text = { Text("¡Bienvenido! El home se encuentra en desarrollo.",fontSize = 18.sp) },
+            onDismissRequest = { mostrarDialogoExito = false },
+            title = { Text("Registro Exitoso",fontSize = 20.sp) },
+            text = { Text("El usuario ha sido registrado correctamente.",fontSize = 18.sp) },
             confirmButton = {
-                TextButton(onClick = { mostrarPopupExito = false }) {
+                TextButton(
+                    onClick = {
+                        mostrarDialogoExito = false
+                        navController.navigate("login") {
+                            popUpTo("login") { inclusive = true }
+                        }
+                    }
+                ) {
                     Text("Aceptar")
                 }
             }
@@ -141,9 +203,11 @@ fun LoginScreen(navController: NavController) {
 
 @Preview(showBackground = true)
 @Composable
-fun LoginScreenPreview() {
+fun loginScreenPreview() {
     val navController = rememberNavController()
     MaterialTheme {
-        LoginScreen(navController = navController)
+        RegistroScreen(navController)
     }
 }
+
+
